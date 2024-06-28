@@ -1,0 +1,6 @@
+@MediaLendingService.Server_HostAddress = http://localhost:5288
+
+GET {{MediaLendingService.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

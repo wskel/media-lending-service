@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35013.160
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaLendingService.Server", "MediaLendingService.Server\MediaLendingService.Server.csproj", "{A890F7B5-6DA0-4088-8EA3-8C04D3AB1CF9}"
+EndProject
+Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "medialendingservice.client", "medialendingservice.client\medialendingservice.client.esproj", "{6DBC91FD-BD43-426D-A08A-82024AA02BBE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A890F7B5-6DA0-4088-8EA3-8C04D3AB1CF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A890F7B5-6DA0-4088-8EA3-8C04D3AB1CF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A890F7B5-6DA0-4088-8EA3-8C04D3AB1CF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A890F7B5-6DA0-4088-8EA3-8C04D3AB1CF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DBC91FD-BD43-426D-A08A-82024AA02BBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DBC91FD-BD43-426D-A08A-82024AA02BBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DBC91FD-BD43-426D-A08A-82024AA02BBE}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{6DBC91FD-BD43-426D-A08A-82024AA02BBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DBC91FD-BD43-426D-A08A-82024AA02BBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DBC91FD-BD43-426D-A08A-82024AA02BBE}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EBA25C70-68F2-493E-B926-54C889AEB4D8}
+	EndGlobalSection
+EndGlobal
