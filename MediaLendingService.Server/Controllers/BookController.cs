@@ -12,38 +12,42 @@ public class BooksController : ControllerBase
 
     public BooksController(IBookService bookService)
     {
+        ArgumentNullException.ThrowIfNull(bookService);
         _bookService = bookService;
     }
 
     [HttpGet]
-    public IEnumerable<BookDto> GetBooks()
+    public async Task<ActionResult<IEnumerable<BookDto>>> GetBooksAsync()
     {
-        return _bookService.GetBooks();
+        var books = await _bookService.GetBooksAsync();
+        return Ok(books);
     }
 
     [HttpGet("{id:int}")]
-    public ActionResult<BookDto> GetBook(int id)
+    public async Task<ActionResult<BookDto>> GetBookAsync(int id)
     {
-        var book = _bookService.GetBook(id);
+        var book = await _bookService.GetBookAsync(id);
         return book != null ? Ok(book) : NotFound();
     }
 
     [HttpPost]
-    public IEnumerable<BookDto> AddBooks([FromBody] IEnumerable<BookDto> books)
+    public async Task<ActionResult<IEnumerable<BookDto>>> AddBooksAsync(IEnumerable<BookDto> books)
     {
-        return _bookService.AddBooks(books);
+        var addedBooks = await _bookService.AddBooksAsync(books);
+        return Ok(addedBooks);
     }
 
     [HttpPut("{id:int}")]
-    public ActionResult<BookDto> UpdateBook(int id, [FromBody] BookDto book)
+    public async Task<ActionResult<BookDto>> UpdateBookAsync(int id, BookDto book)
     {
-        var updatedBook = _bookService.UpdateBook(id, book);
+        var updatedBook = await _bookService.UpdateBookAsync(id, book);
         return updatedBook != null ? Ok(updatedBook) : NotFound();
     }
 
     [HttpDelete("{id:int}")]
-    public ActionResult DeleteBook(int id)
+    public async Task<ActionResult> DeleteBookAsync(int id)
     {
-        return _bookService.DeleteBook(id) ? Ok() : NoContent();
+        var result = await _bookService.DeleteBookAsync(id);
+        return result ? Ok() : NoContent();
     }
 }

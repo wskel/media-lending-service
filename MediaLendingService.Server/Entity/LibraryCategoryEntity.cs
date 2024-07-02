@@ -10,7 +10,7 @@ public record LiteraryCategoryEntity
     public int Id { get; init; }
     
     [Required]
-    public string Name { get; init; } = null!;
+    public string Name { get; set; } = null!;
     
     private LiteraryCategoryEntity() {}
 

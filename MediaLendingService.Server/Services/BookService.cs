@@ -8,42 +8,48 @@ namespace MediaLendingService.Server.Services;
 public class BookService : IBookService
 {
     private readonly ApplicationDbContext _dbContext;
+    private readonly ILiteraryCategoryService _categoryService;
 
-    public BookService(ApplicationDbContext dbContext)
+    public BookService(ApplicationDbContext dbContext, ILiteraryCategoryService categoryService)
     {
+        ArgumentNullException.ThrowIfNull(dbContext);
+        ArgumentNullException.ThrowIfNull(categoryService);
+
         _dbContext = dbContext;
+        _categoryService = categoryService;
     }
 
-    public IEnumerable<BookDto> GetBooks()
+    public async Task<IEnumerable<BookDto>> GetBooksAsync()
     {
-        return _dbContext.Books
+        return await _dbContext.Books
             .Include(b => b.Category)
-            .Select(ToModel);
+            .Select(entity => ToModel(entity))
+            .ToListAsync();
     }
 
-    public BookDto? GetBook(int id)
+    public async Task<BookDto?> GetBookAsync(int id)
     {
-        var entity = _dbContext.Books
+        var entity = await _dbContext.Books
             .Include(b => b.Category)
-            .FirstOrDefault(b => b.Id == id);
+            .FirstOrDefaultAsync(b => b.Id == id);
 
         return entity != null ? ToModel(entity) : null;
     }
 
-    public IEnumerable<BookDto> AddBooks(IEnumerable<BookDto> books)
+    public async Task<IEnumerable<BookDto>> AddBooksAsync(IEnumerable<BookDto> books)
     {
         var bookEntities = books.Select(ToEntity).ToArray();
-        _dbContext.Books.AddRange(bookEntities);
-        _dbContext.SaveChanges();
+        await _dbContext.Books.AddRangeAsync(bookEntities);
+        await _dbContext.SaveChangesAsync();
 
         return bookEntities.Select(ToModel);
     }
 
-    public BookDto? UpdateBook(int id, BookDto book)
+    public async Task<BookDto?> UpdateBookAsync(int id, BookDto book)
     {
-        var bookEntity = _dbContext.Books
+        var bookEntity = await _dbContext.Books
             .Include(b => b.Category)
-            .FirstOrDefault(b => b.Id == id);
+            .FirstOrDefaultAsync(b => b.Id == id);
 
         if (bookEntity == null)
         {
@@ -60,26 +66,33 @@ public class BookService : IBookService
         bookEntity.PageCount = book.PageCount;
         bookEntity.IsCheckedOut = book.IsCheckedOut;
 
-        if (bookEntity.Category.Id != book.Category.Id)
+        var categoryId = book.Category.Id;
+        if (bookEntity.Category.Id != categoryId)
         {
-            // TO-DO
+            var categoryEntity = await _categoryService.GetCategoryEntityAsync(categoryId);
+            if (categoryEntity == null)
+            {
+                return null;
+            }
+
+            bookEntity.Category = categoryEntity;
         }
 
         _dbContext.Books.Update(bookEntity);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return ToModel(bookEntity);
     }
 
-    public bool DeleteBook(int id)
+    public async Task<bool> DeleteBookAsync(int id)
     {
-        var bookEntity = _dbContext.Books.Find(id);
+        var bookEntity = await _dbContext.Books.FindAsync(id);
         if (bookEntity == null)
         {
             return false;
         }
 
         _dbContext.Books.Remove(bookEntity);
-        _dbContext.SaveChanges();
+        await _dbContext.SaveChangesAsync();
         return true;
     }
 

@@ -4,13 +4,13 @@ namespace MediaLendingService.Server.Services;
 
 public interface IBookService
 {
-    IEnumerable<BookDto> GetBooks();
+    Task<IEnumerable<BookDto>> GetBooksAsync();
 
-    BookDto? GetBook(int id);
+    Task<BookDto?> GetBookAsync(int id);
 
-    IEnumerable<BookDto> AddBooks(IEnumerable<BookDto> books);
+    Task<IEnumerable<BookDto>> AddBooksAsync(IEnumerable<BookDto> books);
 
-    BookDto? UpdateBook(int id, BookDto book);
+    Task<BookDto?> UpdateBookAsync(int id, BookDto book);
 
-    bool DeleteBook(int id);
+    Task<bool> DeleteBookAsync(int id);
 }

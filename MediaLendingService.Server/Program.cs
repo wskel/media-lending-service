@@ -10,6 +10,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(optionsBuilder =>
 );
 
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<ILiteraryCategoryService, LiteraryCategoryService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
