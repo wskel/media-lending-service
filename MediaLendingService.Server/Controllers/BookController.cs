@@ -19,35 +19,31 @@ public class BooksController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<BookDto>>> GetBooksAsync()
     {
-        var books = await _bookService.GetBooksAsync();
-        return Ok(books);
+        return Ok(await _bookService.GetBooksAsync());
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<BookDto>> GetBookAsync(int id)
     {
-        var book = await _bookService.GetBookAsync(id);
-        return book != null ? Ok(book) : NotFound();
+        return Ok(await _bookService.GetBookAsync(id));
     }
 
     [HttpPost]
     public async Task<ActionResult<IEnumerable<BookDto>>> AddBooksAsync(IEnumerable<BookDto> books)
     {
-        var addedBooks = await _bookService.AddBooksAsync(books);
-        return Ok(addedBooks);
+        return Ok(await _bookService.AddBooksAsync(books));
     }
 
     [HttpPut("{id:int}")]
     public async Task<ActionResult<BookDto>> UpdateBookAsync(int id, BookDto book)
     {
-        var updatedBook = await _bookService.UpdateBookAsync(id, book);
-        return updatedBook != null ? Ok(updatedBook) : NotFound();
+        return Ok(await _bookService.UpdateBookAsync(id, book));
     }
 
     [HttpDelete("{id:int}")]
     public async Task<ActionResult> DeleteBookAsync(int id)
     {
-        var result = await _bookService.DeleteBookAsync(id);
-        return result ? Ok() : NoContent();
+        await _bookService.DeleteBookAsync(id);
+        return Ok();
     }
 }

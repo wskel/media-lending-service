@@ -19,27 +19,19 @@ public class LiteraryCategoryController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<LiteraryCategoryDto>>> GetLiteraryCategory()
     {
-        var categories = await _categoryService.GetCategoriesAsync();
-        return Ok(categories);
+        return Ok(await _categoryService.GetCategoriesAsync());
     }
 
     [HttpGet("{id:int}")]
     public async Task<ActionResult<LiteraryCategoryDto>> GetLiteraryCategory(int id)
     {
-        var category = await _categoryService.GetCategoryAsync(id);
-        return category != null ? Ok(category) : NotFound();
+        return Ok(await _categoryService.GetCategoryAsync(id));
     }
 
     [HttpPut("{id:int}")]
     public async Task<IActionResult> PutLiteraryCategory(int id, LiteraryCategoryDto literaryCategory)
     {
-        if (id != literaryCategory.Id)
-        {
-            return BadRequest();
-        }
-
-        var updatedCategory = await _categoryService.UpdateCategoryAsync(id, literaryCategory);
-        return updatedCategory != null ? Ok(updatedCategory) : NotFound();
+        return Ok(await _categoryService.UpdateCategoryAsync(id, literaryCategory));
     }
 
     [HttpPost]
@@ -53,7 +45,7 @@ public class LiteraryCategoryController : ControllerBase
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteLiteraryCategory(int id)
     {
-        var result = await _categoryService.DeleteCategoryAsync(id);
-        return result ? Ok() : NoContent();
+        await _categoryService.DeleteCategoryAsync(id);
+        return Ok();
     }
 }

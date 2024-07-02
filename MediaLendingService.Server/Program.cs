@@ -1,4 +1,6 @@
 using MediaLendingService.Server.Data;
+using MediaLendingService.Server.Exceptions;
+using MediaLendingService.Server.Serializers;
 using MediaLendingService.Server.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,9 +14,15 @@ builder.Services.AddDbContext<ApplicationDbContext>(optionsBuilder =>
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<ILiteraryCategoryService, LiteraryCategoryService>();
 
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IJsonSerializer, SystemTextJsonSerializer>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddExceptionHandler<ApplicationExceptionHandler>();
+builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
@@ -40,5 +48,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
+
+app.UseExceptionHandler();
 
 app.Run();

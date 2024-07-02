@@ -1,6 +1,7 @@
 ﻿using MediaLendingService.Server.Data;
 using MediaLendingService.Server.Dto;
 using MediaLendingService.Server.Entity;
+using MediaLendingService.Server.Exceptions.api;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaLendingService.Server.Services;
@@ -24,10 +25,15 @@ public class LiteraryCategoryService : ILiteraryCategoryService
         return categories;
     }
 
-    public async Task<LiteraryCategoryDto?> GetCategoryAsync(int id)
+    public async Task<LiteraryCategoryDto> GetCategoryAsync(int id)
     {
         var categoryEntity = await _dbContext.LiteraryCategories.FindAsync(id);
-        return categoryEntity != null ? ToModel(categoryEntity) : null;
+        if (categoryEntity == null)
+        {
+            throw NewNotFound(id);
+        }
+
+        return ToModel(categoryEntity);
     }
 
     public async Task<LiteraryCategoryEntity?> GetCategoryEntityAsync(int id)
@@ -44,12 +50,18 @@ public class LiteraryCategoryService : ILiteraryCategoryService
         return ToModel(categoryEntity);
     }
 
-    public async Task<LiteraryCategoryDto?> UpdateCategoryAsync(int id, LiteraryCategoryDto category)
+    public async Task<LiteraryCategoryDto> UpdateCategoryAsync(int id, LiteraryCategoryDto category)
     {
+        var bodyId = category.Id;
+        if (id != bodyId)
+        {
+            throw new BadRequestException($"Literary category id {id} in path does not match body id {bodyId}");
+        }
+
         var categoryEntity = await _dbContext.LiteraryCategories.FindAsync(id);
         if (categoryEntity == null)
         {
-            return null;
+            throw NewNotFound(id);
         }
 
         categoryEntity.Name = category.Name;
@@ -64,11 +76,11 @@ public class LiteraryCategoryService : ILiteraryCategoryService
         {
             if (!LiteraryCategoryExists(id))
             {
-                return null;
+                throw NewNotFound(id);
             }
             else
             {
-                throw; // TODO
+                throw new ConflictException("Literary category not up-to-date");
             }
         }
 
@@ -76,17 +88,16 @@ public class LiteraryCategoryService : ILiteraryCategoryService
         return ToModel(categoryEntity);
     }
 
-    public async Task<bool> DeleteCategoryAsync(int id)
+    public async Task DeleteCategoryAsync(int id)
     {
         var categoryEntity = await _dbContext.LiteraryCategories.FindAsync(id);
         if (categoryEntity == null)
         {
-            return false;
+            throw new NoOpDeleteException();
         }
 
         _dbContext.LiteraryCategories.Remove(categoryEntity);
         await _dbContext.SaveChangesAsync();
-        return true;
     }
 
     private bool LiteraryCategoryExists(int id)
@@ -97,4 +108,7 @@ public class LiteraryCategoryService : ILiteraryCategoryService
 
     private static LiteraryCategoryEntity ToEntity(LiteraryCategoryDto model) =>
         new(model.Id, model.Name);
+
+    private static NotFoundException NewNotFound(int id) =>
+        new NotFoundException($"The literary category with id {id} could not be found");
 }

@@ -7,13 +7,13 @@ public interface ILiteraryCategoryService
 {
     Task<IEnumerable<LiteraryCategoryDto>> GetCategoriesAsync();
 
-    Task<LiteraryCategoryDto?> GetCategoryAsync(int id);
-    
+    Task<LiteraryCategoryDto> GetCategoryAsync(int id);
+
     Task<LiteraryCategoryEntity?> GetCategoryEntityAsync(int id);
 
     Task<LiteraryCategoryDto> AddCategoryAsync(LiteraryCategoryDto category);
 
-    Task<LiteraryCategoryDto?> UpdateCategoryAsync(int id, LiteraryCategoryDto category);
+    Task<LiteraryCategoryDto> UpdateCategoryAsync(int id, LiteraryCategoryDto category);
 
-    Task<bool> DeleteCategoryAsync(int id);
+    Task DeleteCategoryAsync(int id);
 }

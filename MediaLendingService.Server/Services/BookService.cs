@@ -1,6 +1,7 @@
 ﻿using MediaLendingService.Server.Data;
 using MediaLendingService.Server.Dto;
 using MediaLendingService.Server.Entity;
+using MediaLendingService.Server.Exceptions.api;
 using Microsoft.EntityFrameworkCore;
 
 namespace MediaLendingService.Server.Services;
@@ -27,13 +28,18 @@ public class BookService : IBookService
             .ToListAsync();
     }
 
-    public async Task<BookDto?> GetBookAsync(int id)
+    public async Task<BookDto> GetBookAsync(int id)
     {
         var entity = await _dbContext.Books
             .Include(b => b.Category)
             .FirstOrDefaultAsync(b => b.Id == id);
 
-        return entity != null ? ToModel(entity) : null;
+        if (entity == null)
+        {
+            throw NewNotFound(id);
+        }
+
+        return ToModel(entity);
     }
 
     public async Task<IEnumerable<BookDto>> AddBooksAsync(IEnumerable<BookDto> books)
@@ -45,7 +51,7 @@ public class BookService : IBookService
         return bookEntities.Select(ToModel);
     }
 
-    public async Task<BookDto?> UpdateBookAsync(int id, BookDto book)
+    public async Task<BookDto> UpdateBookAsync(int id, BookDto book)
     {
         var bookEntity = await _dbContext.Books
             .Include(b => b.Category)
@@ -53,7 +59,7 @@ public class BookService : IBookService
 
         if (bookEntity == null)
         {
-            return null;
+            throw NewNotFound(id);
         }
 
         bookEntity.Title = book.Title;
@@ -72,7 +78,8 @@ public class BookService : IBookService
             var categoryEntity = await _categoryService.GetCategoryEntityAsync(categoryId);
             if (categoryEntity == null)
             {
-                return null;
+                throw new NotFoundException(
+                    $"The literary category with id {categoryId} on book {id} could not be found");
             }
 
             bookEntity.Category = categoryEntity;
@@ -83,17 +90,16 @@ public class BookService : IBookService
         return ToModel(bookEntity);
     }
 
-    public async Task<bool> DeleteBookAsync(int id)
+    public async Task DeleteBookAsync(int id)
     {
         var bookEntity = await _dbContext.Books.FindAsync(id);
         if (bookEntity == null)
         {
-            return false;
+            throw new NoOpDeleteException();
         }
 
         _dbContext.Books.Remove(bookEntity);
         await _dbContext.SaveChangesAsync();
-        return true;
     }
 
     private static BookDto ToModel(BookEntity entity) => new(
@@ -123,4 +129,7 @@ public class BookService : IBookService
         model.PageCount,
         model.IsCheckedOut
     );
+
+    private static NotFoundException NewNotFound(int id) =>
+        new NotFoundException($"The book with id {id} could not be found");
 }
