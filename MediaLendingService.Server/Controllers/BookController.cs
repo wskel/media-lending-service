@@ -1,4 +1,5 @@
 ﻿using MediaLendingService.Server.Dto;
+using MediaLendingService.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaLendingService.Server.Controllers;
@@ -7,53 +8,42 @@ namespace MediaLendingService.Server.Controllers;
 [Route("api/v0/[controller]")]
 public class BooksController : ControllerBase
 {
-    [HttpGet]
-    public BookDto[] GetBooks()
+    private readonly IBookService _bookService;
+
+    public BooksController(IBookService bookService)
     {
-        var placeholderBook = GetPlaceholderBook();
-        return new[] { placeholderBook };
+        _bookService = bookService;
+    }
+
+    [HttpGet]
+    public IEnumerable<BookDto> GetBooks()
+    {
+        return _bookService.GetBooks();
     }
 
     [HttpGet("{id:int}")]
-    public BookDto GetBook(int id)
+    public ActionResult<BookDto> GetBook(int id)
     {
-        return GetPlaceholderBook();
+        var book = _bookService.GetBook(id);
+        return book != null ? Ok(book) : NotFound();
     }
 
     [HttpPost]
-    public BookDto[] AddBook([FromBody] BookDto[] book)
+    public IEnumerable<BookDto> AddBooks([FromBody] IEnumerable<BookDto> books)
     {
-        var placeholderBook = GetPlaceholderBook();
-        return new[] { placeholderBook };
+        return _bookService.AddBooks(books);
     }
 
     [HttpPut("{id:int}")]
-    public BookDto UpdateBook(int id, [FromBody] BookDto book)
+    public ActionResult<BookDto> UpdateBook(int id, [FromBody] BookDto book)
     {
-        return GetPlaceholderBook();
+        var updatedBook = _bookService.UpdateBook(id, book);
+        return updatedBook != null ? Ok(updatedBook) : NotFound();
     }
 
     [HttpDelete("{id:int}")]
-    public IActionResult DeleteBook(int id)
+    public ActionResult DeleteBook(int id)
     {
-        return Ok();
-    }
-
-    private static BookDto GetPlaceholderBook()
-    {
-        var placeholderBook = new BookDto(
-            Id: 1,
-            Title: "title",
-            Author: "author",
-            Description: "",
-            CoverImage: new Uri(""),
-            Publisher: "",
-            PublicationDate: DateOnly.FromDateTime(DateTime.Now),
-            Category: new LiteraryCategoryDto(1, "Sci-fi"),
-            Isbn: "",
-            PageCount: 1
-        );
-
-        return placeholderBook;
+        return _bookService.DeleteBook(id) ? Ok() : NoContent();
     }
 }

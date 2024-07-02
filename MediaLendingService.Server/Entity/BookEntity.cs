@@ -14,35 +14,35 @@ public record BookEntity
     public int Id { get; init; }
     
     [Required]
-    public string Title { get; init; } = null!;
+    public string Title { get; set; } = null!;
 
     [Required]
-    public string Author { get; init; } = null!;
+    public string Author { get; set; } = null!;
 
     [Required]
-    public string Description { get; init; } = null!;
+    public string Description { get; set; } = null!;
 
     [Required]
-    public Uri CoverImage { get; init; } = null!;
+    public Uri CoverImage { get; set; } = null!;
 
     [Required]
-    public string Publisher { get; init; } = null!;
+    public string Publisher { get; set; } = null!;
 
     [Required]
-    public DateOnly PublicationDate { get; init; }
+    public DateOnly PublicationDate { get; set; }
     
     [ForeignKey("CategoryId")]
     [Required]
-    public LiteraryCategoryEntity Category { get; init; } = null!;
+    public LiteraryCategoryEntity Category { get; set; } = null!;
 
     [Required]
-    public string Isbn { get; init; } = null!;
+    public string Isbn { get; set; } = null!;
 
     [Required]
-    public int PageCount { get; init; }
+    public int PageCount { get; set; }
     
     [Required]
-    public bool IsCheckedOut { get; init; } = false;
+    public bool IsCheckedOut { get; set; } = false;
 
     private BookEntity() { }
     
@@ -53,8 +53,11 @@ public record BookEntity
         string description,
         Uri coverImage,
         string publisher,
+        DateOnly publicationDate,
         LiteraryCategoryEntity category,
-        string isbn)
+        string isbn,
+        int pageCount,
+        bool isCheckedOut)
     {
         Id = id;
         Title = title;
@@ -62,7 +65,10 @@ public record BookEntity
         Description = description;
         CoverImage = coverImage;
         Publisher = publisher;
+        PublicationDate = publicationDate;
         Category = category;
         Isbn = isbn;
+        PageCount = pageCount;
+        IsCheckedOut = isCheckedOut;
     }
 }
