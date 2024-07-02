@@ -4,6 +4,7 @@ using MediaLendingService.Server.Exceptions;
 using MediaLendingService.Server.Identity;
 using MediaLendingService.Server.Serializers;
 using MediaLendingService.Server.Services;
+using MediaLendingService.Server.Startup;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(optionsBuilder =>
     optionsBuilder.UseSqlServer(connectionString)
 );
+
+// register assertions to be validated on startup
+builder.Services.RegisterStartupAssertions();
 
 #region Authorization
 
@@ -31,6 +35,8 @@ builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
 
 #endregion
 
+#region Services
+
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<ILiteraryCategoryService, LiteraryCategoryService>();
 
@@ -44,13 +50,33 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddExceptionHandler<ApplicationExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+# endregion
+
+builder.Services.AddSingleton<IStartupAssertionValidator, StartupAssertionValidator>();
+
 var app = builder.Build();
+
+#region Startup assertions
+
+using (var scope = app.Services.CreateScope())
+{
+    // Validate startup assertions that have been registered
+    scope.ServiceProvider.GetRequiredService<IStartupAssertionValidator>().Validate();
+}
+
+#endregion
+
+#region Apply migrations
 
 using (var scope = app.Services.CreateScope())
 {
     var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     dbContext.Database.Migrate();
 }
+
+#endregion
+
+#region Middleware configuration
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
@@ -72,5 +98,7 @@ app.MapControllers();
 app.MapFallbackToFile("/index.html");
 
 app.UseExceptionHandler();
+
+#endregion
 
 app.Run();

@@ -1,9 +1,11 @@
 ﻿using MediaLendingService.Server.Dto;
 using MediaLendingService.Server.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MediaLendingService.Server.Controllers;
 
+[Authorize(Roles = nameof(UserRoleDto.Librarian))]
 [Route("api/[controller]")]
 [ApiController]
 public class LiteraryCategoryController : ControllerBase
