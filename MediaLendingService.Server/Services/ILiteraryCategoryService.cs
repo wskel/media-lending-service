@@ -1,5 +1,5 @@
 ﻿using MediaLendingService.Server.Dto;
-using MediaLendingService.Server.Entity;
+using MediaLendingService.Server.Entities;
 
 namespace MediaLendingService.Server.Services;
 

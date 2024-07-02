@@ -79,7 +79,7 @@ namespace MediaLendingService.Server.Migrations
 
                     b.HasIndex("Title");
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
             modelBuilder.Entity("MediaLendingService.Server.Entity.LiteraryCategoryEntity", b =>
@@ -99,7 +99,7 @@ namespace MediaLendingService.Server.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("LiteraryCategories");
+                    b.ToTable("LiteraryCategories", (string)null);
                 });
 
             modelBuilder.Entity("MediaLendingService.Server.Identity.ApplicationRole", b =>

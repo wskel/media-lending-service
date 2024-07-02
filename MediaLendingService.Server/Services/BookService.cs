@@ -1,6 +1,6 @@
 ﻿using MediaLendingService.Server.Data;
 using MediaLendingService.Server.Dto;
-using MediaLendingService.Server.Entity;
+using MediaLendingService.Server.Entities;
 using MediaLendingService.Server.Exceptions.api;
 using Microsoft.EntityFrameworkCore;
 

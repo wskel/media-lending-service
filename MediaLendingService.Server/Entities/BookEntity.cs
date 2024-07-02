@@ -2,17 +2,17 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace MediaLendingService.Server.Entity;
+namespace MediaLendingService.Server.Entities;
 
 [Index(nameof(Title))]
 [Index(nameof(Author))]
-[Index(nameof(Isbn), IsUnique = true)] 
+[Index(nameof(Isbn), IsUnique = true)]
 [Index(nameof(PublicationDate))]
 public record BookEntity
 {
     [Key]
     public int Id { get; init; }
-    
+
     [Required]
     public string Title { get; set; } = null!;
 
@@ -30,7 +30,7 @@ public record BookEntity
 
     [Required]
     public DateOnly PublicationDate { get; set; }
-    
+
     [ForeignKey("CategoryId")]
     [Required]
     public LiteraryCategoryEntity Category { get; set; } = null!;
@@ -40,12 +40,13 @@ public record BookEntity
 
     [Required]
     public int PageCount { get; set; }
-    
-    [Required]
-    public bool IsCheckedOut { get; set; } = false;
 
+    [Required]
+    public bool IsCheckedOut { get; set; }
+
+    // ReSharper disable once UnusedMember.Local
     private BookEntity() { }
-    
+
     public BookEntity(
         int id,
         string title,
