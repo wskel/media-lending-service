@@ -1,7 +1,10 @@
 using MediaLendingService.Server.Data;
+using MediaLendingService.Server.Dto;
 using MediaLendingService.Server.Exceptions;
+using MediaLendingService.Server.Identity;
 using MediaLendingService.Server.Serializers;
 using MediaLendingService.Server.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +13,23 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(optionsBuilder =>
     optionsBuilder.UseSqlServer(connectionString)
 );
+
+#region Authorization
+
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicyRequireRole(UserRoleDto.Customer)
+    .AddPolicyRequireRole(UserRoleDto.Librarian);
+
+#endregion
+
+#region Identity
+
+builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
+    .AddRoles<ApplicationRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
+
+#endregion
 
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<ILiteraryCategoryService, LiteraryCategoryService>();
@@ -43,7 +63,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
+app.MapIdentityApi<ApplicationUser>();
 
 app.MapControllers();
 
