@@ -91,7 +91,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapIdentityApi<ApplicationUser>();
+app.MapGroup("/api/v0").MapApplicationIdentityApi();
 
 app.MapControllers();
 

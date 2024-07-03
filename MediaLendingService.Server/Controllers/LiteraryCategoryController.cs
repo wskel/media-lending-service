@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace MediaLendingService.Server.Controllers;
 
 [Authorize(Roles = nameof(UserRoleDto.Librarian))]
-[Route("api/[controller]")]
+[Route("api/v0/[controller]")]
 [ApiController]
 public class LiteraryCategoryController : ControllerBase
 {
