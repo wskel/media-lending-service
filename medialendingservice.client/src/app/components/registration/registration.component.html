@@ -1,0 +1,37 @@
+<form (ngSubmit)="onSubmit()" #registrationForm="ngForm" class="registration-form">
+  <mat-form-field appearance="fill">
+    <mat-label>Email</mat-label>
+    <input matInput type="email" id="email" required [(ngModel)]="email" name="email" #emailModel="ngModel">
+    <mat-error *ngIf="emailModel.invalid && (emailModel.dirty || emailModel.touched)">
+      <span *ngIf="emailModel.errors?.['required']">Email is required.</span>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Password</mat-label>
+    <input matInput type="password" id="password" required [(ngModel)]="password" name="password" #passwordModel="ngModel">
+    <mat-error *ngIf="passwordModel.invalid && (passwordModel.dirty || passwordModel.touched)">
+      <span *ngIf="passwordModel.errors?.['required']">Password is required.</span>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Preferred Name</mat-label>
+    <input matInput type="text" id="preferredName" [(ngModel)]="preferredName" name="preferredName" #preferredNameModel="ngModel">
+    <mat-error *ngIf="preferredNameModel.invalid && (preferredNameModel.dirty || preferredNameModel.touched)">
+      <span *ngIf="preferredNameModel.errors?.['maxlength']">Preferred name cannot exceed 100 characters.</span>
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field appearance="fill">
+    <mat-label>Role</mat-label>
+    <mat-select [(ngModel)]="role" name="role" #roleModel="ngModel" required>
+      <mat-option *ngFor="let roleOption of roleOptions" [value]="roleOption.value">{{ roleOption.viewValue }}</mat-option>
+    </mat-select>
+    <mat-error *ngIf="roleModel.invalid && (roleModel.dirty || roleModel.touched)">
+      <span *ngIf="roleModel.errors?.['required']">Role is required.</span>
+    </mat-error>
+  </mat-form-field>
+
+  <button mat-raised-button color="primary" type="submit" [disabled]="registrationForm.invalid">Register</button>
+</form>
