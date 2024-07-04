@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { LoggingService } from '../../services/logging.service';
 import { UserRoleDto } from "../../models/user-role.dto";
-import { RegisterRequestDto } from "../../models/register-request.dto";
+import { AuthService } from "../../services/auth.service";
+import { Router } from "@angular/router";
+import { PATHS } from "../../app-routing.module";
 
 @Component({
   selector: 'app-registration',
@@ -10,31 +11,37 @@ import { RegisterRequestDto } from "../../models/register-request.dto";
   styleUrl: './registration.component.css'
 })
 export class RegistrationComponent {
-  email: string = '';
-  password: string = '';
-  preferredName: string | null = null;
-  role: UserRoleDto = UserRoleDto.Customer;
+  protected email: string = '';
+  protected password: string = '';
+  protected preferredName: string | null = null;
+  protected role: UserRoleDto = UserRoleDto.Customer;
 
-  roleOptions = [
+  protected roleOptions = [
     {value: UserRoleDto.Customer, viewValue: 'Customer'},
     {value: UserRoleDto.Librarian, viewValue: 'Librarian'}
   ];
 
-  constructor(private http: HttpClient, private logger: LoggingService) {
+  public constructor(private logger: LoggingService, private authService: AuthService, private router: Router) {
   }
 
-  onSubmit() {
-    const postData: RegisterRequestDto = {
-      email: this.email,
-      password: this.password,
-      preferredName: this.preferredName,
-      role: this.role
-    };
-
-    this.http.post('/api/v0/register', postData)
+  public onSubmit() {
+    this.authService.registerUser(this.email, this.password, this.preferredName, this.role)
       .subscribe({
         next: (response) => {
-          this.logger.debug('Registration success', response);
+          this.logger.debug('Registration success, attempting authentication...', response);
+          this.authService.authenticateUser(this.email, this.password)
+            .subscribe({
+              next: (response) => {
+                this.logger.debug('Authentication success, redirecting...');
+                this.router.navigate([PATHS.ROOT]);
+              },
+              error: (error) => {
+                this.logger.error('Authentication error', error);
+              },
+              complete: () => {
+                this.logger.debug('Authentication complete');
+              }
+            });
         },
         error: (error) => {
           this.logger.error('Registration error', error);

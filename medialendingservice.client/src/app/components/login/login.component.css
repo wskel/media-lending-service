@@ -1,0 +1,13 @@
+.login-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 25rem;
+  margin: auto;
+}
+
+mat-form-field {
+  margin-bottom: 1rem;
+}
