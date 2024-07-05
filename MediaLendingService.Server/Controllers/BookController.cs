@@ -17,14 +17,14 @@ public class BooksController : ControllerBase
         _bookService = bookService;
     }
 
-    [Authorize(Roles = nameof(UserRoleDto.Customer))]
+    [Authorize(Roles = $"{nameof(UserRoleDto.Customer)},{nameof(UserRoleDto.Librarian)}")]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<BookDto>>> GetBooksAsync()
     {
         return Ok(await _bookService.GetBooksAsync());
     }
 
-    [Authorize(Roles = nameof(UserRoleDto.Customer))]
+    [Authorize(Roles = $"{nameof(UserRoleDto.Customer)},{nameof(UserRoleDto.Librarian)}")]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<BookDto>> GetBookAsync(int id)
     {
