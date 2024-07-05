@@ -59,4 +59,9 @@ export class AuthService {
       })
     );
   }
+
+  public logout(): void {
+    this.tokenService.clear();
+    this.logger.debug('Logged out');
+  }
 }
