@@ -13,7 +13,7 @@ public record LiteraryCategoryEntity
     public string Name { get; set; } = null!;
 
     // ReSharper disable once UnusedMember.Local
-    private LiteraryCategoryEntity() { }
+    public LiteraryCategoryEntity() { }
 
     public LiteraryCategoryEntity(
         int id,

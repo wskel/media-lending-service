@@ -34,6 +34,10 @@ public record BookEntity
     [ForeignKey("CategoryId")]
     [Required]
     public LiteraryCategoryEntity Category { get; set; } = null!;
+    
+    // ReSharper disable once PropertyCanBeMadeInitOnly.Global
+    [Required]
+    public int CategoryId { get; set; }
 
     [Required]
     public string Isbn { get; set; } = null!;
@@ -45,7 +49,7 @@ public record BookEntity
     public bool IsCheckedOut { get; set; }
 
     // ReSharper disable once UnusedMember.Local
-    private BookEntity() { }
+    public BookEntity() { }
 
     public BookEntity(
         int id,
@@ -68,6 +72,7 @@ public record BookEntity
         Publisher = publisher;
         PublicationDate = publicationDate;
         Category = category;
+        CategoryId = category.Id;
         Isbn = isbn;
         PageCount = pageCount;
         IsCheckedOut = isCheckedOut;
