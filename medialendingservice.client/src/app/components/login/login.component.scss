@@ -1,13 +1,25 @@
+.login-container {
+  text-align: center;
+  margin: auto;
+  padding: 1.25rem;
+}
+
 .login-form {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 1.25rem;
+  align-items: center;
   width: 100%;
   max-width: 25rem;
   margin: auto;
 }
 
 mat-form-field {
+  width: 100%;
   margin-bottom: 1rem;
+}
+
+.register-link {
+  margin-top: 1rem;
+  text-align: center;
 }

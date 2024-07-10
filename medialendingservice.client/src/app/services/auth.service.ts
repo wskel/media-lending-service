@@ -4,13 +4,15 @@ import { LoggingService } from "./logging.service";
 import { TokenService } from "./token.service";
 import { ApiService } from "./api.service";
 import { RegisterRequestDto } from "../models/register-request.dto";
-import { Observable, tap } from "rxjs";
+import { BehaviorSubject, Observable, tap } from "rxjs";
 import { UserRoleDto } from "../models/user-role.dto";
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  private isLoggedInSubject = new BehaviorSubject<boolean>(this.canActivate());
+  public isLoggedIn$ = this.isLoggedInSubject.asObservable();
 
   public constructor(
     private logger: LoggingService,
@@ -52,6 +54,7 @@ export class AuthService {
       tap({
         next: (response) => {
           this.tokenService.setTokens(response);
+          this.isLoggedInSubject.next(true);
           this.logger.debug('Login success', response);
         },
         error: (error) => this.logger.error('Login error', error),
@@ -62,6 +65,7 @@ export class AuthService {
 
   public logout(): void {
     this.tokenService.clear();
+    this.isLoggedInSubject.next(false);
     this.logger.debug('Logged out');
   }
 }

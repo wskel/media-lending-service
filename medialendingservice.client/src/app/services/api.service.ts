@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 import { LoggingService } from './logging.service';
 import { LoginRequestDto } from "../models/auth/login-request.dto";
 import { AccessTokenResponseDto } from "../models/auth/access-token-response.dto";
 import { RefreshRequestDto } from "../models/auth/refresh-request.dto";
 import { RegisterRequestDto } from "../models/register-request.dto";
+import { BookDto } from "../models/books/book.dto";
+import { LiteraryCategoryDto } from "../models/books/literary-category.dto";
+import { deserializeDateOnlyDto, serializeDateOnlyDto } from "../utils/serializers/date-only-dto.serializer";
+import { isString, safeCast } from "../utils/safe-cast";
 
 export const REFRESH_PATH = "/api/v0/refresh";
 
@@ -24,6 +28,85 @@ export class ApiService {
     return throwError(() => error);
   }
 
+// Books API
+  public getBooks(): Observable<BookDto[] | null> {
+    return this.http.get<BookDto[]>("/api/v0/Books").pipe(
+      map(books => books.map(book => ({
+        ...book,
+        publicationDate: deserializeDateOnlyDto(safeCast<string>(book.publicationDate, isString))
+      }))),
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  public addBooks(books: BookDto[]): Observable<BookDto[] | null> {
+    const serializedBooks = books.map(book => ({
+      ...book,
+      publicationDate: serializeDateOnlyDto(book.publicationDate)
+    }));
+    return this.http.post<BookDto[]>("/api/v0/Books", serializedBooks).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  public getBookById(id: number): Observable<BookDto | null> {
+    return this.http.get<BookDto>(`/api/v0/Books/${id}`).pipe(
+      map(book => ({
+        ...book,
+        publicationDate: deserializeDateOnlyDto(safeCast<string>(book.publicationDate, isString))
+      })),
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  public updateBook(id: number, book: BookDto): Observable<BookDto | null> {
+    const serializedBook = {
+      ...book,
+      publicationDate: serializeDateOnlyDto(book.publicationDate)
+    };
+    return this.http.put<BookDto>(`/api/v0/Books/${id}`, serializedBook).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  public deleteBook(id: number): Observable<void> {
+    return this.http.delete<void>(`/api/v0/Books/${id}`).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  // LiteraryCategories API
+  public getCategories(): Observable<LiteraryCategoryDto[] | null> {
+    return this.http.get<LiteraryCategoryDto[]>("/api/v0/LiteraryCategory").pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  public addCategory(category: LiteraryCategoryDto): Observable<LiteraryCategoryDto | null> {
+    return this.http.post<LiteraryCategoryDto>("/api/v0/LiteraryCategory", category).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  public getCategoryById(id: number): Observable<LiteraryCategoryDto | null> {
+    return this.http.get<LiteraryCategoryDto>(`/api/v0/LiteraryCategory/${id}`).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  public updateCategory(id: number, category: LiteraryCategoryDto): Observable<LiteraryCategoryDto | null> {
+    return this.http.put<LiteraryCategoryDto>(`/api/v0/LiteraryCategory/${id}`, category).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  public deleteCategory(id: number): Observable<void> {
+    return this.http.delete<void>(`/api/v0/LiteraryCategory/${id}`).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  // Authentication API
   public login(request: LoginRequestDto): Observable<AccessTokenResponseDto | null> {
     return this.http.post<AccessTokenResponseDto>("/api/v0/login", request).pipe(
       catchError(this.handleError.bind(this))

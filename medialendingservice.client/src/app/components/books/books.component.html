@@ -1,0 +1,35 @@
+<div class="books-container">
+  <ng-container *ngIf="isLoading$ | async">
+    <mat-spinner/>
+  </ng-container>
+
+  <ng-container *ngIf="error$ | async">
+    <p>An error occurred while attempting to load books. Please try again later.</p>
+  </ng-container>
+
+  <ng-container *ngIf="(books$ | async) as books">
+    <ng-container *ngIf="books.length; else booksNotFound">
+      <mat-card *ngFor="let book of books" class="book-card">
+        <mat-card-header>
+          <mat-card-title>{{ book.title }}</mat-card-title>
+          <mat-card-subtitle>{{ book.author }}</mat-card-subtitle>
+        </mat-card-header>
+        <img mat-card-image [ngSrc]="book.coverImage || ''" [alt]="book.title + ' cover image'" width="300"
+             height="225">
+        <mat-card-content>
+          <p>{{ book.description }}</p>
+          <p><strong>Publisher:</strong> {{ book.publisher }}</p>
+          <p><strong>Publication Date:</strong> {{ book.publicationDate | formatDateOnly }}</p>
+          <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+          <p><strong>Page Count:</strong> {{ book.pageCount }}</p>
+          <p><strong>Category:</strong> {{ book.category?.name }}</p>
+          <p><strong>Checked Out:</strong> {{ book.isCheckedOut ? 'Yes' : 'No' }}</p>
+        </mat-card-content>
+      </mat-card>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #booksNotFound>
+    <p>No books found.</p>
+  </ng-template>
+</div>

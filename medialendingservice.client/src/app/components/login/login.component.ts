@@ -1,13 +1,14 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { LoggingService } from '../../services/logging.service';
-import { PATHS } from "../../app-routing.module";
+import { NAV_PATHS } from "../../app-routing.module";
+import { AppRouter } from "../../utils/app-router";
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.scss']
 })
 export class LoginComponent {
   protected email: string = '';
@@ -17,9 +18,9 @@ export class LoginComponent {
   public constructor(
     private logger: LoggingService,
     private authService: AuthService,
-    private router: Router,
+    private router: AppRouter,
     private route: ActivatedRoute) {
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || PATHS.ROOT;
+    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || NAV_PATHS.ROOT;
   }
 
   public onSubmit() {
@@ -37,5 +38,5 @@ export class LoginComponent {
     });
   }
 
-  protected readonly PATHS = PATHS;
+  protected readonly NAV_PATHS = NAV_PATHS;
 }

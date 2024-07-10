@@ -1,1 +1,16 @@
-﻿<router-outlet></router-outlet>
+﻿<div class="app-container">
+  <mat-toolbar [ngClass]="{'sticky-header': true, 'scrolled': isScrolled}">
+    <div class="header-content">
+      <a routerLink="/" class="title-link">{{ title }}</a>
+      <button *ngIf="authService.isLoggedIn$ | async" mat-stroked-button color="warn" (click)="logout()">Logout</button>
+    </div>
+  </mat-toolbar>
+
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+
+  <mat-toolbar class="footer">
+    <span>© 2024</span>
+  </mat-toolbar>
+</div>

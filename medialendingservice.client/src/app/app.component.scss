@@ -1,0 +1,40 @@
+﻿.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--mat-app-background-color);
+  color: var(--mat-app-text-color);
+}
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: background-color 0.3s ease;
+}
+
+.sticky-header:not(.scrolled) {
+  background-color: var(--mat-toolbar-default-color);
+}
+
+.sticky-header.scrolled {
+  background-color: var(--mat-toolbar-scrolled-color);
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+main {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.footer {
+  background-color: var(--mat-toolbar-default-color);
+  justify-content: center;
+}

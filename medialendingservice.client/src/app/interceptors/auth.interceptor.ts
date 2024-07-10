@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
-import { Router } from "@angular/router";
 import { BehaviorSubject, catchError, filter, from, Observable, switchMap, take, throwError } from "rxjs";
 import { TokenService } from "../services/token.service";
 import { REFRESH_PATH } from "../services/api.service";
+import { NAV_PATHS } from "../app-routing.module";
+import { AppRouter } from "../utils/app-router";
 import { AuthService } from "../services/auth.service";
 import { LoggingService } from "../services/logging.service";
-import { PATHS } from "../app-routing.module";
 
 @Injectable({
   providedIn: 'root'
@@ -18,12 +18,12 @@ export class AuthInterceptor implements HttpInterceptor {
   private readonly host = window.location.host;
 
   private isRefreshing = false;
-  private refreshTokenSubject: BehaviorSubject<string | null> = new BehaviorSubject<string | null>(null);
+  private refreshTokenSubject$ = new BehaviorSubject<string | null>(null);
   private lastRefresh: number = 0;
 
   public constructor(
     private logger: LoggingService,
-    private router: Router,
+    private router: AppRouter,
     private tokenService: TokenService,
     private authService: AuthService) {
   }
@@ -45,7 +45,7 @@ export class AuthInterceptor implements HttpInterceptor {
     }
 
     const accessToken = this.tokenService.getAccessToken();
-    this.refreshTokenSubject.next(this.tokenService.getRefreshToken());
+    this.refreshTokenSubject$.next(this.tokenService.getRefreshToken());
     let authenticatedRequest = this.buildAuthenticated(req, accessToken)
 
     return next.handle(authenticatedRequest).pipe(
@@ -54,7 +54,7 @@ export class AuthInterceptor implements HttpInterceptor {
           // prevent infinite recursion in the edge case where the refresh endpoint returns a 401
           && req.url !== REFRESH_PATH
           // prevent erroneous 401s on the login screen from needlessly attempting to refresh
-          && this.refreshTokenSubject.value !== null
+          && this.refreshTokenSubject$.value !== null
         ) {
           return this.handle401(req, next);
         }
@@ -89,27 +89,27 @@ export class AuthInterceptor implements HttpInterceptor {
     let elapsed = (Date.now() - this.lastRefresh);
 
     // return immediately if token is null and last refresh was less than x minutes ago
-    if (this.refreshTokenSubject.value === null && elapsed < this.REFRESH_MINIMUM_IN_MILLI) {
+    if (this.refreshTokenSubject$.value === null && elapsed < this.REFRESH_MINIMUM_IN_MILLI) {
       return throwError(() => new Error(`Access token refresh failed ${elapsed}ms ago`));
     }
 
     if (!this.isRefreshing) {
       this.isRefreshing = true;
-      this.refreshTokenSubject.next(null);
+      this.refreshTokenSubject$.next(null);
 
       return from(this.tokenService.getAccessTokenRefreshed()).pipe(
         catchError((error) => {
-          this.refreshTokenSubject.complete();
+          this.refreshTokenSubject$.complete();
           this.isRefreshing = false;
           return throwError(() => error);
         }),
         switchMap((accessToken: string | null) => {
           if (accessToken) {
-            this.refreshTokenSubject.next(accessToken);
+            this.refreshTokenSubject$.next(accessToken);
             this.isRefreshing = false;
             return next.handle(this.buildAuthenticated(req, accessToken));
           } else {
-            this.refreshTokenSubject.complete();
+            this.refreshTokenSubject$.complete();
             this.isRefreshing = false;
             this.doLogout();
             return throwError(() => new Error('accessToken refresh failed: accessToken was null'));
@@ -117,7 +117,7 @@ export class AuthInterceptor implements HttpInterceptor {
         })
       );
     } else {
-      return this.refreshTokenSubject.pipe(
+      return this.refreshTokenSubject$.pipe(
         filter(token => token !== null),
         take(1),
         switchMap(token => {
@@ -129,6 +129,6 @@ export class AuthInterceptor implements HttpInterceptor {
 
   private doLogout() {
     this.authService.logout()
-    this.router.navigate([PATHS.LOGIN]);
+    this.router.navigate([NAV_PATHS.LOGIN]);
   }
 }

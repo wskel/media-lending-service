@@ -1,0 +1,34 @@
+@use '@angular/material' as mat;
+@use './app-palette.scss' as app-palette;
+@use 'sass:color';
+@use 'sass:map';
+@use 'sass:math';
+
+$theme: mat.define-theme((
+  color: (
+    theme-type: light,
+    primary: app-palette.$app-palette
+  ),
+  density: (
+    scale: 0,
+  )
+));
+
+html {
+  @include mat.all-component-themes($theme);
+}
+
+:root {
+  --mat-toolbar-default-color: #{mat.get-theme-color($theme, 'surface')};
+  --mat-toolbar-scrolled-color: #{mat.get-theme-color($theme, 'surface-dim')};
+  --mat-card-background-color: #{mat.get-theme-color($theme, 'surface-container-low')};
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}

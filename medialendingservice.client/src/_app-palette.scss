@@ -1,0 +1,126 @@
+@use 'sass:color';
+@use 'sass:map';
+@use 'sass:math';
+
+@function _estimate-hue($hues, $hue, $prev-hue, $next-hue) {
+  $weight: math.div($next-hue - $hue, $next-hue - $prev-hue) * 100%;
+  @return color.mix(map.get($hues, $prev-hue), map.get($hues, $next-hue), $weight);
+}
+
+@function _patch-missing-hues($palette) {
+  $neutral: map.get($palette, neutral);
+  $palette: map.set($palette, neutral, 4, _estimate-hue($neutral, 4, 0, 10));
+  $palette: map.set($palette, neutral, 6, _estimate-hue($neutral, 6, 0, 10));
+  $palette: map.set($palette, neutral, 12, _estimate-hue($neutral, 12, 10, 20));
+  $palette: map.set($palette, neutral, 17, _estimate-hue($neutral, 17, 10, 20));
+  $palette: map.set($palette, neutral, 22, _estimate-hue($neutral, 22, 20, 25));
+  $palette: map.set($palette, neutral, 24, _estimate-hue($neutral, 24, 20, 25));
+  $palette: map.set($palette, neutral, 87, _estimate-hue($neutral, 87, 80, 90));
+  $palette: map.set($palette, neutral, 92, _estimate-hue($neutral, 92, 90, 95));
+  $palette: map.set($palette, neutral, 94, _estimate-hue($neutral, 94, 90, 95));
+  $palette: map.set($palette, neutral, 96, _estimate-hue($neutral, 96, 95, 98));
+  @return $palette;
+}
+
+@function _patch-error-palette($palette) {
+  @return map.merge(
+      $palette,
+      (
+        error: (
+          0: #000000,
+          10: #410002,
+          20: #690005,
+          25: #7e0007,
+          30: #93000a,
+          35: #a80710,
+          40: #ba1a1a,
+          50: #de3730,
+          60: #ff5449,
+          70: #ff897d,
+          80: #ffb4ab,
+          90: #ffdad6,
+          95: #ffedea,
+          98: #fff8f7,
+          99: #fffbff,
+          100: #ffffff,
+        ),
+      )
+  );
+}
+
+@function _apply-patches($palette) {
+  @return _patch-missing-hues(_patch-error-palette($palette));
+}
+
+$app-palette: _apply-patches((
+  0: #000000,
+  10: #001b3f,
+  20: #003056,
+  25: #003d6b,
+  30: #004a80,
+  35: #005795,
+  40: #0064ab,
+  50: #0074e9,
+  60: #438fff,
+  70: #7cabff,
+  80: #abc7ff,
+  90: #d7e3ff,
+  95: #ecf0ff,
+  98: #f9f9ff,
+  99: #fdfbff,
+  100: #ffffff,
+  secondary: (
+    0: #000000,
+    10: #2b1708,
+    20: #422b1b,
+    25: #4f3625,
+    30: #5b4130,
+    35: #684c3b,
+    40: #755846,
+    50: #90715d,
+    60: #ab8a75,
+    70: #c8a48e,
+    80: #e5bfa8,
+    90: #ffdcc7,
+    95: #ffede4,
+    98: #fff8f5,
+    99: #fffbff,
+    100: #ffffff,
+  ),
+  neutral: (
+    0: #000000,
+    10: #1a1714,
+    20: #322d28,
+    25: #3d3732,
+    30: #48413b,
+    35: #534c45,
+    40: #5e5750,
+    50: #746e67,
+    60: #8a857d,
+    70: #a29c94,
+    80: #bab5ad,
+    90: #d4cfc7,
+    95: #e7e4de,
+    98: #f4f3ef,
+    99: #faf9f6,
+    100: #ffffff,
+  ),
+  neutral-variant: (
+    0: #000000,
+    10: #1d1b18,
+    20: #33312d,
+    25: #3e3c38,
+    30: #494642,
+    35: #54524d,
+    40: #5f5c57,
+    50: #76736e,
+    60: #8e8b85,
+    70: #a6a39d,
+    80: #bfbbb5,
+    90: #dad6d0,
+    95: #eceae6,
+    98: #f9f8f6,
+    99: #fcfbf9,
+    100: #ffffff,
+  ),
+));
