@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { LoggingService } from './logging.service';
@@ -11,6 +11,8 @@ import { BookDto } from "../models/books/book.dto";
 import { LiteraryCategoryDto } from "../models/books/literary-category.dto";
 import { deserializeDateOnlyDto, serializeDateOnlyDto } from "../utils/serializers/date-only-dto.serializer";
 import { isString, safeCast } from "../utils/safe-cast";
+import { PagedResult } from "../models/paged-result";
+import { OrderingSeedService, SEED_KEYS } from "./ordering-seed.service";
 
 export const REFRESH_PATH = "/api/v0/refresh";
 
@@ -20,7 +22,10 @@ export const REFRESH_PATH = "/api/v0/refresh";
 })
 export class ApiService {
 
-  public constructor(private logger: LoggingService, private http: HttpClient) {
+  public constructor(
+    private logger: LoggingService,
+    private http: HttpClient,
+    private orderingSeedService: OrderingSeedService) {
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -28,13 +33,27 @@ export class ApiService {
     return throwError(() => error);
   }
 
-// Books API
-  public getBooks(): Observable<BookDto[] | null> {
-    return this.http.get<BookDto[]>("/api/v0/Books").pipe(
-      map(books => books.map(book => ({
-        ...book,
-        publicationDate: deserializeDateOnlyDto(safeCast<string>(book.publicationDate, isString))
-      }))),
+  // Books API
+  public getBooks(
+    seed: string       = this.orderingSeedService.getOrderingSeed(SEED_KEYS.BOOKS),
+    searchTerm: string = '',
+    page: number       = 1,
+    pageSize: number   = 10
+  ): Observable<PagedResult<BookDto> | null> {
+    const params = new HttpParams()
+      .set('seed', seed)
+      .set('searchString', searchTerm)
+      .set('pageNumber', page.toString())
+      .set('pageSize', pageSize.toString());
+
+    return this.http.get<PagedResult<BookDto>>("/api/v0/Books", {params}).pipe(
+      map(result => ({
+        ...result,
+        items: result.items.map(book => ({
+          ...book,
+          publicationDate: deserializeDateOnlyDto(safeCast<string>(book.publicationDate, isString))
+        }))
+      })),
       catchError(this.handleError.bind(this))
     );
   }

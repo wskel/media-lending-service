@@ -10,6 +10,7 @@ public class BookService : IBookService
 {
     private readonly ApplicationDbContext _dbContext;
     private readonly ILiteraryCategoryService _categoryService;
+    private const string DefaultSeed = "1c5b9307-fdb6-46e4-957c-5109b59bbc3d";
 
     public BookService(ApplicationDbContext dbContext, ILiteraryCategoryService categoryService)
     {
@@ -20,12 +21,41 @@ public class BookService : IBookService
         _categoryService = categoryService;
     }
 
-    public async Task<IEnumerable<BookDto>> GetBooksAsync()
+    public async Task<PagedResult<BookDto>> GetBooksAsync(
+        bool useRandomOrdering = true,
+        string? seed = null,
+        string? searchString = null,
+        int pageNumber = 1,
+        int pageSize = 20)
     {
-        return await _dbContext.Books
-            .Include(b => b.Category)
+        var query = _dbContext.Books.Include(b => b.Category).AsQueryable();
+
+        if (!string.IsNullOrEmpty(searchString))
+        {
+            query = query.Where(b =>
+                b.Title.Contains(searchString) ||
+                b.Author.Contains(searchString) ||
+                b.Category.Name.Contains(searchString));
+        }
+
+        var localSeed = seed ?? (useRandomOrdering ? Guid.NewGuid().ToString() : DefaultSeed);
+        var seedValue = StringToIntMd5(localSeed);
+        query = query.OrderBy(b => (b.Id | seedValue) & ~(b.Id & seedValue));
+
+        var totalCount = await query.CountAsync();
+        var items = await query
+            .Skip((pageNumber - 1) * pageSize)
+            .Take(pageSize)
             .Select(entity => ToModel(entity))
             .ToListAsync();
+
+        return new PagedResult<BookDto>
+        {
+            Items = items,
+            TotalCount = totalCount,
+            PageNumber = pageNumber,
+            PageSize = pageSize
+        };
     }
 
     public async Task<BookDto> GetBookAsync(int id)
@@ -132,4 +162,11 @@ public class BookService : IBookService
 
     private static NotFoundException NewNotFound(int id) =>
         new NotFoundException($"The book with id {id} could not be found");
+
+    private static int StringToIntMd5(string input)
+    {
+        var inputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+        var hashBytes = System.Security.Cryptography.MD5.HashData(inputBytes);
+        return BitConverter.ToInt32(hashBytes, 0);
+    }
 }

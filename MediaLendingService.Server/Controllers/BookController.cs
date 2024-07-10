@@ -19,9 +19,20 @@ public class BooksController : ControllerBase
 
     [Authorize(Roles = $"{nameof(UserRoleDto.Customer)},{nameof(UserRoleDto.Librarian)}")]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<BookDto>>> GetBooksAsync()
+    public async Task<ActionResult<IEnumerable<BookDto>>> GetBooksAsync(
+        [FromQuery] bool useRandomOrdering = true,
+        [FromQuery] string? seed = null,
+        [FromQuery] string? searchString = null,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20)
     {
-        return Ok(await _bookService.GetBooksAsync());
+        return Ok(await _bookService.GetBooksAsync(
+            useRandomOrdering: useRandomOrdering,
+            seed: seed,
+            searchString: searchString,
+            pageNumber: pageNumber,
+            pageSize: pageSize)
+        );
     }
 
     [Authorize(Roles = $"{nameof(UserRoleDto.Customer)},{nameof(UserRoleDto.Librarian)}")]

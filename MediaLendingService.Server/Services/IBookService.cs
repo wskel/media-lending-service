@@ -4,7 +4,12 @@ namespace MediaLendingService.Server.Services;
 
 public interface IBookService
 {
-    Task<IEnumerable<BookDto>> GetBooksAsync();
+    Task<PagedResult<BookDto>> GetBooksAsync(
+        bool useRandomOrdering = true,
+        string? seed = null,
+        string? searchString = null,
+        int pageNumber = 1,
+        int pageSize = 20);
 
     Task<BookDto> GetBookAsync(int id);
 

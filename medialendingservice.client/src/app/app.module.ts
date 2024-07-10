@@ -21,6 +21,8 @@ import { MatToolbar } from "@angular/material/toolbar";
 import { FormatDateOnlyPipe } from './pipes/format-date-only.pipe';
 import { NgOptimizedImage } from "@angular/common";
 import { MatProgressSpinner } from "@angular/material/progress-spinner";
+import { MatPaginator } from "@angular/material/paginator";
+import { MatIcon } from "@angular/material/icon";
 
 @NgModule({
   declarations: [
@@ -45,6 +47,8 @@ import { MatProgressSpinner } from "@angular/material/progress-spinner";
     MatToolbar,
     NgOptimizedImage,
     MatProgressSpinner,
+    MatPaginator,
+    MatIcon,
   ],
   providers: [
     provideHttpClient(withInterceptorsFromDi()),

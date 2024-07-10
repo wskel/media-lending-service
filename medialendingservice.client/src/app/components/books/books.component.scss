@@ -1,17 +1,101 @@
+$card-width: 18.75rem;
+$card-gap: 1rem;
+$grid-columns: 4;
+$container-max-width: calc(($card-width * $grid-columns) + ($card-gap * ($grid-columns - 1)));
+$search-bar-width: 40rem;
+
 .books-container {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding: 1rem;
-  overflow-y: auto;
+  flex-direction: column;
+  align-items: center;
   height: 100%;
+  width: 100%;
+  max-width: $container-max-width;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.search-container {
+  width: 100%;
+  max-width: 40rem;
+  margin-bottom: 1rem;
+}
+
+.search-input {
+  width: 100%;
+}
+
+.books-content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 100%;
+}
+
+.books-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $card-gap;
+  width: 100%;
   justify-content: center;
 }
 
 .book-card {
-  width: 100%;
-  max-width: 18.75rem;
-  margin: 0.5rem;
+  flex: 0 1 $card-width;
+  width: $card-width;
+  max-width: $card-width;
+  margin-bottom: $card-gap;
   background-color: var(--mat-card-background-color);
   box-shadow: none;
+}
+
+.spinner-container {
+  margin-bottom: 2rem;
+}
+
+.error-message, .no-books-message {
+  text-align: center;
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.mat-mdc-paginator-container {
+  justify-content: center;
+}
+
+@media (max-width: $container-max-width) {
+  .books-grid {
+    justify-content: center;
+  }
+
+  .book-card {
+    flex: 0 1 $card-width;
+    width: $card-width;
+    max-width: $card-width;
+  }
+}
+
+@media (max-width: calc(#{$card-width} * 2 + #{$card-gap})) {
+  .book-card {
+    flex: 0 1 100%;
+    width: 100%;
+    max-width: $card-width;
+  }
+}
+
+@media (max-width: $search-bar-width) {
+  .books-content {
+    min-width: auto;
+  }
+
+  .search-container {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: ($card-width * 2 + $card-gap)) {
+  .books-container {
+    padding: 0 0.5rem;
+  }
 }
