@@ -91,6 +91,11 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Future enhancements:
+//  * convert to use JWT instead of the binary format in Microsoft.AspNetCore.Authentication.PropertiesSerializer
+//  * convert to use controller(s)
+//  * use jti claim for token revocation mechanism
 app.MapGroup("/api/v0").MapApplicationIdentityApi();
 
 app.MapControllers();
